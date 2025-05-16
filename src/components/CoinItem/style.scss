@@ -1,0 +1,49 @@
+.coin {
+  display: flex;
+  color: white;
+  padding: 4px 16px;
+  align-items: center;
+  column-gap: 12px;
+  width: 409px;
+
+  &__img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+  }
+
+  &__data {
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    column-gap: 4px;
+  }
+
+  &__name {
+    color: white;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  &__approved {
+    width: 18px;
+    height: 18px;
+    color: #c7f284;
+  }
+
+  &__list {
+    --tw-text-opacity: 1;
+    color: rgb(49 186 81 / var(--tw-text-opacity));
+    font-weight: 10px;
+  }
+
+  &__full-name,
+  &__name-id {
+    color: rgba(232, 249, 255, 0.5);
+    font-size: 10px;
+    line-height: 16px;
+  }
+}

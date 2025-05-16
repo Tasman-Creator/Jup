@@ -1,0 +1,30 @@
+.more-item {
+  color: #fff;
+  text-decoration: none;
+  padding: 16px 20px;
+  display: flex;
+  gap: 16px;
+  width: 337px;
+  box-sizing: border-box;
+
+  &__img {
+    --tw-text-opacity: 1;
+    color: rgb(199 242 132 / var(--tw-text-opacity));
+    width: 20px;
+    height: 20px;
+  }
+  &__title {
+    --tw-text-opacity: 1;
+    color: rgb(226 232 240 / var(--tw-text-opacity));
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 20px;
+  }
+  &__desc {
+    margin-top: 4px;
+    --tw-text-opacity: 1;
+    color: rgb(144 161 185 / var(--tw-text-opacity));
+    font-size: 12px;
+    line-height: 16px;
+  }
+}

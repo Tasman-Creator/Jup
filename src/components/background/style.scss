@@ -1,0 +1,22 @@
+.fixed-background {
+  position: fixed;
+  inset: 0;
+  bottom: 0;
+  z-index: -10;
+  height: 100vh;
+  background-color: rgb(11 14 19);
+
+  @media (max-width: 639px) {
+    height: calc(100% - 56px);
+  }
+}
+
+.fixed-background img {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  object-fit: cover;
+  opacity: 0.4;
+  mask-image: linear-gradient(to top, rgba(0, 0, 0, 1) 60%, transparent 90%);
+  -webkit-mask-image: linear-gradient(to top, rgba(0, 0, 0, 1) 60%, transparent 90%);
+}

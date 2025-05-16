@@ -1,0 +1,63 @@
+.coin-search {
+  display: flex;
+  color: white;
+  padding: 4px 16px;
+  align-items: center;
+  column-gap: 12px;
+  justify-content: space-between;
+
+  &__img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    margin-right: 12px;
+  }
+
+  &__data {
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    column-gap: 4px;
+  }
+
+  &__name {
+    color: white;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  &__approved {
+    width: 18px;
+    height: 18px;
+    color: #c7f284;
+  }
+
+  &__list {
+    --tw-text-opacity: 1;
+    color: rgb(49 186 81 / var(--tw-text-opacity));
+    font-weight: 10px;
+  }
+
+  &__full-name,
+  &__name-id {
+    color: rgba(232, 249, 255, 0.5);
+    font-size: 12px;
+    line-height: 16px;
+  }
+
+  &__about {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    color: rgba(232, 249, 255, 0.5);
+  }
+
+  &__statics {
+    display: flex;
+    font-size: 12px;
+    color: #fff;
+  }
+}
