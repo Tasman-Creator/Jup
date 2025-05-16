@@ -72,7 +72,7 @@ const Header: React.FC<HeaderProps> = ({ isAsideOpen }) => {
           <div
             className={`navigation-link ${
               location.pathname.includes(routes.spot) ||
-              location.pathname === '/newTestSite/'
+              location.pathname === '/Jup/'
                 ? 'active'
                 : ''
             }`}
