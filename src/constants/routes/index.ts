@@ -1,10 +1,10 @@
 export const routes = {
-    spot: '/Jup/spot',
-    spot_instant: '/Jup/spot/instant',
-    spot_trigger: '/Jup/spot/trigger',
-    spot_recurring: '/Jup/spot/recurring',
+    spot: '/spot',
+    spot_instant: '/spot/instant',
+    spot_trigger: '/spot/trigger',
+    spot_recurring: '/spot/recurring',
 
-    perps: '/Jup/perps',
+    perps: '/perps',
 
-    trenches: '/Jup/trenches',
+    trenches: '/trenches',
 }

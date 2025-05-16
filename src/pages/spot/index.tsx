@@ -223,7 +223,7 @@ const Spot: React.FC = () => {
           <div
             className={`spot-header-tab ${
               location.pathname === routes.spot_instant ||
-              location.pathname === '/Jup/' ||
+              location.pathname === '/' ||
               location.pathname === routes.spot
                 ? 'active'
                 : ''
@@ -272,7 +272,7 @@ const Spot: React.FC = () => {
         </div>
 
         {(location.pathname === routes.spot_instant ||
-          location.pathname === '/Jup/' ||
+          location.pathname === '/' ||
           location.pathname === routes.spot) && <Instant isAsideOpen={setIsAsideOpen}/>}
         {location.pathname === routes.spot_recurring && <Reccuring isAsideOpen={setIsAsideOpen}/>}
         {location.pathname === routes.spot_trigger && <Trigger isAsideOpen={setIsAsideOpen}/>}
