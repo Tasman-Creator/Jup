@@ -20,7 +20,7 @@ type FlowProps = {
 }
 
 const Flow: React.FC<FlowProps> = ({sendingCurrencyValue, sendingCurrencyPrice}) => {
-  const connection = new Connection('https://snowy-silent-aura.solana-devnet.quiknode.pro/9b28587745372a31c39de4d3bb40a62d39a66232' as string, "confirmed");
+  const connection = new Connection('https://snowy-silent-aura.solana-devnet.quiknode.pro/9b28587745372a31c39de4d3bb40a62d39a66232/' as string, "confirmed");
   const { isConnected, address } = useAppKitAccount();
 
   // Get the wallet provider with the AppKit hook
@@ -47,26 +47,6 @@ const Flow: React.FC<FlowProps> = ({sendingCurrencyValue, sendingCurrencyPrice})
       })
       .catch((err) => console.log(err))
   }, [])
-
-  // function to get the balance
-  const handleGetBalance = async () => {
-    const wallet = new PublicKey(address as string);
-    const balance = await connection?.getBalance(wallet); // get the amount in LAMPORTS
-
-    console.log(`${(balance as number) / LAMPORTS_PER_SOL} SOL`);
-  };
-
-  // function to sing a msg
-  const handleSignMsg = async () => {
-    // message to sign
-    const encodedMessage = new TextEncoder().encode("Hello Reown AppKit!");
-
-    // Raise the modal
-    const sig = await walletProvider.signMessage(encodedMessage);
-
-    // Print the signed message in hexadecimal format
-    console.log(Buffer.from(sig).toString("hex"));
-  };
 
   // function to send a TX
   const handleSendTx = async () => {
@@ -156,16 +136,6 @@ const Flow: React.FC<FlowProps> = ({sendingCurrencyValue, sendingCurrencyPrice})
 
   return (
     <>
-      {/*{isConnected && (
-        <div>
-          <button onClick={handleGetBalance}>Get Balance</button>
-        </div>
-      )}
-      {isConnected && (
-        <div>
-          <button onClick={handleSignMsg}>Sign Message</button>
-        </div>
-      )}*/}
       {isConnected && (
         <div>
           <div className='instant-connect' onClick={handleSendTx}>Send Transaction</div>
@@ -229,11 +199,6 @@ async function checkATA({
 }): Promise<Transaction> {
   const senderAta = await getAssociatedTokenAddress(tokenMintKey, sender);
   const receiverAta = await getAssociatedTokenAddress(tokenMintKey, recipient);
-
-  const senderBalance = await connection.getTokenAccountBalance(senderAta);
-  if (!senderBalance.value || parseFloat(senderBalance.value.amount) < amountToSend) {
-    throw new Error("Недостатньо токенів на гаманці");
-  }
 
   const receiverAtaInfo = await connection.getAccountInfo(receiverAta);
   const tx = new Transaction();
