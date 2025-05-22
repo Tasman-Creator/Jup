@@ -25,9 +25,10 @@ interface TokenStore {
   searchTokens: (guery: string) => Promise<void>
   setSelectedSellingToken: (token: Token) => void
   setSelectedBuyingToken: (token: Token) => void
+  swapTokens: () => void
 }
 
-export const useTokenStore = create<TokenStore>((set) => ({
+export const useTokenStore = create<TokenStore>((set, get) => ({
   tokens: [],
   loading: false,
   selectedSellingToken: {
@@ -79,4 +80,12 @@ export const useTokenStore = create<TokenStore>((set) => ({
 
   setSelectedSellingToken: (token) => set({ selectedSellingToken: token }),
   setSelectedBuyingToken: (token) => set({ selectedBuyingToken: token }),
+  swapTokens: () => {
+    const selling = get().selectedSellingToken;
+    const buying = get().selectedBuyingToken;
+    set({
+      selectedSellingToken: buying,
+      selectedBuyingToken: selling,
+    });
+  }
 }))

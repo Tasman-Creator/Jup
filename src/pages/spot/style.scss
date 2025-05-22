@@ -197,8 +197,14 @@
     align-items: center;
     cursor: pointer;
 
-    background-color: rgb(31 45 59);
-    border-radius: 12px;
+    color: rgb(202 213 226);
+    font-size: 12px;
+    background-color: rgb(21 30 40);
+    border-radius: 9999px;
+
+    svg {
+      margin-left: 4px;
+    }
   }
 
   .chart-diagrams {

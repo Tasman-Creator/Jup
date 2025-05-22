@@ -2,6 +2,10 @@
 
 *{font-family: 'Inter', sans-serif;}
 
+* :hover {
+  transition: all .15s linear;
+}
+
 body {
   height: 100vh;
   width: 100vw;

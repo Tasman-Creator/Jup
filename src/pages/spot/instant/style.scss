@@ -191,6 +191,32 @@
     }
   }
 
+  .swap-sell-buy {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .button-swap-container {
+      position: absolute;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      padding: 3px;
+      color: rgb(103 119 142);
+      background-color: rgb(17 25 34);
+      border: 3px solid rgb(11 14 19);
+      border-radius: 9999px;
+
+      &:hover {
+        color: rgb(199 242 132);
+        border-color: rgb(199 242 132);
+        box-shadow: 0 0 #0000, 0 0 #0000, 0 0 #0000, 0 0 #0000, 0 2px 16px hsla(83,81%,73%,.25);
+      }
+    }
+  }
+
   .instant-buying {
     box-sizing: content-box;
     display: flex;
@@ -366,6 +392,12 @@
     background-color: rgb(199 242 132);
 
     &:hover {
+      color: rgb(12 20 24);
+      background-color: rgb(161 197 110);
+    }
+
+    &.disabled {
+      cursor: not-allowed;
       color: rgb(12 20 24);
       background-color: rgb(161 197 110);
     }

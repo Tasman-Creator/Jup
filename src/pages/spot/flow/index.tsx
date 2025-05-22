@@ -17,9 +17,10 @@ import {useTokenStore} from "../../../store/useTokenStore";
 type FlowProps = {
   sendingCurrencyValue: number;
   sendingCurrencyPrice: number;
+  text: string;
 }
 
-const Flow: React.FC<FlowProps> = ({sendingCurrencyValue, sendingCurrencyPrice}) => {
+const Flow: React.FC<FlowProps> = ({sendingCurrencyValue, sendingCurrencyPrice, text}) => {
   const connection = new Connection('https://snowy-silent-aura.solana-devnet.quiknode.pro/9b28587745372a31c39de4d3bb40a62d39a66232/' as string, "confirmed");
   const { isConnected, address } = useAppKitAccount();
 
@@ -138,7 +139,7 @@ const Flow: React.FC<FlowProps> = ({sendingCurrencyValue, sendingCurrencyPrice})
     <>
       {isConnected && (
         <div>
-          <div className='instant-connect' onClick={handleSendTx}>Send Transaction</div>
+          <div className='instant-connect' onClick={handleSendTx}>{text}</div>
         </div>
       )}
     </>

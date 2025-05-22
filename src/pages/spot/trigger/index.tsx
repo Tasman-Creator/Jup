@@ -32,6 +32,7 @@ const Trigger: React.FC<InstantProps> = ({ isAsideOpen }) => {
     selectedSellingToken,
     setSelectedBuyingToken,
     setSelectedSellingToken,
+    swapTokens,
   } = useTokenStore()
 
   useEffect(() => {
@@ -295,6 +296,15 @@ const Trigger: React.FC<InstantProps> = ({ isAsideOpen }) => {
           </div>
         </div>
 
+        <div className="swap-sell-buy">
+          <div className="button-swap-container" onClick={() => swapTokens()}>
+            <svg width="21" height="22" viewBox="0 0 21 22" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6.51043 7.47998V14.99H7.77043V7.47998L9.66043 9.36998L10.5505 8.47994L7.5859 5.51453C7.3398 5.26925 6.94114 5.26925 6.69504 5.51453L3.73047 8.47994L4.62051 9.36998L6.51043 7.47998Z" fill="currentColor"></path>
+              <path d="M14.4902 14.52V7.01001H13.2302V14.52L11.3402 12.63L10.4502 13.5201L13.4148 16.4855C13.6609 16.7308 14.0595 16.7308 14.3056 16.4855L17.2702 13.5201L16.3802 12.63L14.4902 14.52Z" fill="currentColor"></path>
+            </svg>
+          </div>
+        </div>
+
         <div className="instant-buying">
           <div className="buying-text">Buying</div>
 
@@ -404,8 +414,20 @@ const Trigger: React.FC<InstantProps> = ({ isAsideOpen }) => {
             Connect
           </div>
         )}
-        {/*@ts-ignore*/}
-        <Flow sendingCurrencyValue={+sellingValue} sendingCurrencyPrice={+sellingPrice} />
+        {isConnected && !sellingValue || sellingValue === '0.00' ? (
+          <div
+            className="instant-connect disabled"
+            // onClick={() => connectToWallet(setWalletAddress)}
+            onClick={() => {
+              handleConnectClick();
+            }}
+          >
+            Enter an amount
+          </div>
+        ) : (
+          /*@ts-ignore*/
+          <Flow sendingCurrencyValue={+sellingValue} sendingCurrencyPrice={+sellingPrice} text={'Place Trigger Order'}/>
+        )}
 
         <div className="trigger-fees">
           Ultra Mode: You will receive at least ? {selectedBuyingToken.symbol}, minus platform fees. Learn more

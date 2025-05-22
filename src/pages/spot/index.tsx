@@ -30,6 +30,7 @@ type Props = {
 const Spot: React.FC = () => {
   const [sellingBars, setSellingBars] = useState<Bar[]>([]);
   const [buyingBars, setBuyingBars] = useState<Bar[]>([]);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const location = useLocation()
   const navigate = useNavigate()
 
@@ -279,7 +280,14 @@ const Spot: React.FC = () => {
       </div>
 
       <div className="spot-chart">
-        <div className="chart-btn-expand">Expand Chart</div>
+        <div className="chart-btn-expand" onClick={() => setIsHistoryOpen(!isHistoryOpen)}>
+          {isHistoryOpen ? ('Hide History') : ('Show History')}
+          {isHistoryOpen ? (
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M5.37147 2.54616C5.57468 2.51612 5.7843 2.5 6.00021 2.5C8.55271 2.5 10.2276 4.75242 10.7903 5.64341C10.8585 5.75125 10.8925 5.80517 10.9116 5.88834C10.9259 5.9508 10.9259 6.04933 10.9115 6.11179C10.8925 6.19495 10.8582 6.24923 10.7896 6.35778C10.6397 6.59507 10.4111 6.92855 10.1082 7.29023M3.36216 3.35752C2.28112 4.09085 1.54723 5.10969 1.21055 5.64264C1.14214 5.75094 1.10794 5.80508 1.08887 5.88824C1.07455 5.9507 1.07454 6.04922 1.08886 6.11168C1.10791 6.19484 1.14197 6.24876 1.21007 6.35659C1.77277 7.24758 3.44771 9.5 6.00021 9.5C7.02941 9.5 7.91594 9.1338 8.64441 8.6383M1.50021 1.5L10.5002 10.5M4.93955 4.93934C4.6681 5.21079 4.50021 5.58579 4.50021 6C4.50021 6.82843 5.17178 7.5 6.00021 7.5C6.41442 7.5 6.78942 7.33211 7.06087 7.06066" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          ) : (
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="13" viewBox="0 0 12 13" fill="none"><path d="M5.0002 6.69446C5.0002 6.14217 5.44791 5.69446 6.0002 5.69446C6.55248 5.69446 7.0002 6.14217 7.0002 6.69446C7.0002 7.24674 6.55248 7.69446 6.0002 7.69446C5.44791 7.69446 5.0002 7.24674 5.0002 6.69446Z" fill="currentColor"></path><path fill-rule="evenodd" clip-rule="evenodd" d="M6.0002 2.69446C4.56937 2.69446 3.40287 3.32682 2.53858 4.04817C1.67545 4.76855 1.08368 5.6016 0.787311 6.07088L0.775268 6.08987C0.716458 6.18244 0.640101 6.30263 0.6015 6.47104C0.570333 6.60702 0.570333 6.7819 0.6015 6.91787C0.640101 7.08628 0.716457 7.20647 0.775267 7.29904L0.787311 7.31803C1.08368 7.78731 1.67545 8.62037 2.53858 9.34074C3.40287 10.0621 4.56937 10.6945 6.0002 10.6945C7.43104 10.6945 8.59753 10.0621 9.46183 9.34074C10.325 8.62037 10.9167 7.78731 11.2131 7.31803L11.2251 7.29905C11.2839 7.20648 11.3603 7.08628 11.3989 6.91787C11.4301 6.7819 11.4301 6.60702 11.3989 6.47104C11.3603 6.30263 11.2839 6.18244 11.2251 6.08987L11.2131 6.07088C10.9167 5.6016 10.325 4.76855 9.46183 4.04817C8.59753 3.32682 7.43104 2.69446 6.0002 2.69446ZM6.0002 4.69446C4.89563 4.69446 4.0002 5.58989 4.0002 6.69446C4.0002 7.79903 4.89563 8.69446 6.0002 8.69446C7.10477 8.69446 8.0002 7.79903 8.0002 6.69446C8.0002 5.58989 7.10477 4.69446 6.0002 4.69446Z" fill="currentColor"></path></svg>
+          )}
+        </div>
         <div className="chart-diagrams">
           <div className="diagram-container">
             <div className="diagram-info">
@@ -343,10 +351,12 @@ const Spot: React.FC = () => {
         </div>
       </div>
 
-      <div className="spot-history">
-        <div className="history-text">View History</div>
-        <div className="history-btn-connect" onClick={() => setIsAsideOpen(true)}>Connect</div>
-      </div>
+      {isHistoryOpen && (
+        <div className="spot-history">
+          <div className="history-text">View History</div>
+          <div className="history-btn-connect" onClick={() => setIsAsideOpen(true)}>Connect</div>
+        </div>
+      )}
 
       <div className="talk-to-us">
         <svg

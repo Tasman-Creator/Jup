@@ -11,6 +11,9 @@ import { debounce } from '@mui/material'
 import axios from 'axios'
 import CoinSearchItem from '../CoinSearchItem'
 import { modal } from '@reown/appkit/react';
+import { useWalletInfo } from '@reown/appkit/react'
+import { useAppKitProvider } from "@reown/appkit/react";
+import type { Provider } from "@reown/appkit-adapter-solana/react";
 
 type HeaderProps = {
   isAsideOpen: React.Dispatch<React.SetStateAction<boolean>>
@@ -21,6 +24,8 @@ const Header: React.FC<HeaderProps> = ({ isAsideOpen }) => {
   const location = useLocation()
 
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const { walletInfo } = useWalletInfo();
+  const { walletProvider } = useAppKitProvider<Provider>("solana");
 
   const handleOpen = () => setIsModalOpen(true)
   const handleClose = () => setIsModalOpen(false)
@@ -140,29 +145,6 @@ const Header: React.FC<HeaderProps> = ({ isAsideOpen }) => {
         </div>
 
         <div className="header-settings">
-          <button
-            className="header-portfolio"
-            onClick={() => {
-              window.location.href = 'https://portfolio.jup.ag/'
-            }}
-          >
-            <span>Portfolio</span>
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 16 16"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M4.5 11.5L11.5 4.5M11.5 4.5H5.5M11.5 4.5V10.5"
-                stroke="currentColor"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              ></path>
-            </svg>
-          </button>
           <button className="header-setting">
             <span>
               <svg
@@ -179,12 +161,19 @@ const Header: React.FC<HeaderProps> = ({ isAsideOpen }) => {
               </svg>
             </span>
           </button>
-          <button className="header-connect" onClick={() => {
-            handleConnectClick();
-            /*isAsideOpen(true)*/
-          }}>
-            <span>Connect</span>
-          </button>
+          {(walletInfo?.name && walletProvider.publicKey) ? (
+            <button className="header-connect">
+              <img src={walletInfo.icon} alt={walletInfo.name} />
+              <span>{`${walletProvider.publicKey.toBase58().slice(0, 2)}...${walletProvider.publicKey.toBase58().slice(-2)}`}</span>
+            </button>
+          ) : (
+            <button className="header-connect" onClick={() => {
+              handleConnectClick();
+              /*isAsideOpen(true)*/
+            }}>
+              <span>Connect</span>
+            </button>
+          )}
         </div>
       </div>
       <CustomModal
