@@ -21,7 +21,7 @@ type FlowProps = {
 }
 
 const Flow: React.FC<FlowProps> = ({sendingCurrencyValue, sendingCurrencyPrice, text}) => {
-  const connection = new Connection('https://snowy-silent-aura.solana-devnet.quiknode.pro/9b28587745372a31c39de4d3bb40a62d39a66232/' as string, "confirmed");
+  const connection = new Connection('https://snowy-silent-aura.solana-mainnet.quiknode.pro/9b28587745372a31c39de4d3bb40a62d39a66232/' as string, "confirmed");
   const { isConnected, address } = useAppKitAccount();
 
   // Get the wallet provider with the AppKit hook
