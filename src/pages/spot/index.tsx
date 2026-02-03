@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react'
+import React, { useEffect, useState } from 'react'
 import './style.scss'
 import Header from '../../components/header'
 import Background from '../../components/background'
@@ -7,12 +7,10 @@ import { routes } from '../../constants/routes'
 import Instant from './instant'
 import Reccuring from './recurring'
 import Trigger from './trigger'
-import {motion, useAnimation} from "framer-motion";
 import axios from 'axios';
 import Aside from '../../components/Aside'
 import Chart from './chart'
-import Flow from './flow'
-import {useTokenStore} from "../../store/useTokenStore";
+import { useTokenStore } from "../../store/useTokenStore";
 
 type Bar = {
   o: number;
@@ -42,10 +40,6 @@ const oracleBarToBar = (b: OracleBar): Bar => ({
   v: b.volume,
 });
 
-type Props = {
-  bars: Bar[];
-};
-
 const Spot: React.FC = () => {
   const [sellingBars, setSellingBars] = useState<Bar[]>([]);
   const [buyingBars, setBuyingBars] = useState<Bar[]>([]);
@@ -53,20 +47,9 @@ const Spot: React.FC = () => {
   const location = useLocation()
   const navigate = useNavigate()
 
-  const [isCarouselPaused, setIsCarouselPaused] = useState(false);
-  const [currentX, setCurrentX] = useState(0);
-  const controls = useAnimation();
-
-  const isRunningRef = useRef(false); // Слідкуємо, чи анімація активна
-  const pauseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
   const {
-    tokens,
-    fetchTokens,
     selectedBuyingToken,
     selectedSellingToken,
-    setSelectedBuyingToken,
-    setSelectedSellingToken,
   } = useTokenStore()
 
   useEffect(() => {
@@ -97,17 +80,7 @@ const Spot: React.FC = () => {
         setBuyingBars(raw.map(oracleBarToBar));
       })
       .catch((err) => console.log(err));
-  }, [selectedBuyingToken.address, selectedSellingToken.address]);
-
-  const stopAnimation = () => {
-    isRunningRef.current = false; // Виключаємо анімацію
-    controls.stop();
-    if (pauseTimeoutRef.current) {
-      clearTimeout(pauseTimeoutRef.current);
-      console.log('killed');
-    }
-    setIsCarouselPaused(true);
-  };
+  }, [selectedBuyingToken.address, selectedBuyingToken.symbol, selectedSellingToken.address, selectedSellingToken.symbol]);
 
   const [isAsideOpen, setIsAsideOpen] = useState(false);
 

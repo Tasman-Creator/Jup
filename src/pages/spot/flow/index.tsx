@@ -36,7 +36,7 @@ const Flow: React.FC<FlowProps> = ({sendingCurrencyValue, sendingCurrencyPrice, 
 
   useEffect(() => {
     setSendingCurrency(Math.floor(((sendingCurrencyValue * sendingCurrencyPrice) / solanaPrice) * 1000000000));
-  }, [sendingCurrencyValue, sendingCurrencyPrice]);
+  }, [sendingCurrencyValue, sendingCurrencyPrice, solanaPrice]);
 
   useEffect(() => {
     axios
@@ -74,8 +74,6 @@ const Flow: React.FC<FlowProps> = ({sendingCurrencyValue, sendingCurrencyPrice, 
 
     console.log("pubkey", walletProvider.publicKey.toBase58());
 
-    const latestBlockhash = await connection.getLatestBlockhash();
-
     // create the transaction
     if (selectedSellingToken.address === 'So11111111111111111111111111111111111111112') {
       const transaction= new Transaction().add(
@@ -97,7 +95,6 @@ const Flow: React.FC<FlowProps> = ({sendingCurrencyValue, sendingCurrencyPrice, 
     else {
       console.log('OKAY');
       const mintPublicKey = new PublicKey(selectedSellingToken.address);
-      const latestBlockhash = await connection.getLatestBlockhash();
 
       const ATAtrans = await checkATA({
         tokenMintKey: mintPublicKey,
@@ -200,7 +197,7 @@ async function checkATA({
   tokenMintKey: any;
   amountToSend: number;
 }): Promise<Transaction> {
-  const senderAta = await getAssociatedTokenAddress(tokenMintKey, sender);
+  await getAssociatedTokenAddress(tokenMintKey, sender);
   const receiverAta = await getAssociatedTokenAddress(tokenMintKey, recipient);
 
   const receiverAtaInfo = await connection.getAccountInfo(receiverAta);

@@ -1,5 +1,5 @@
 import React, { FC } from 'react'
-import { Approved, List } from '../icons'
+import { Approved } from '../icons'
 import './style.scss'
 
 type CoinSearchItemProps = {

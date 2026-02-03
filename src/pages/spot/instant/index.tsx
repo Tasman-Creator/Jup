@@ -3,7 +3,6 @@ import './style.scss'
 import { CustomModal } from '../../../components/CustomModal'
 import axios from 'axios'
 import { CoinsItem } from '../../../components/CoinItem'
-import CoinSearchItem from '../../../components/CoinSearchItem'
 import { Token, useTokenStore } from '../../../store/useTokenStore'
 import { modal } from '@reown/appkit/react';
 import Flow from "../flow";
@@ -41,7 +40,7 @@ const Instant: React.FC<InstantProps> = ({ isAsideOpen }) => {
 
   useEffect(() => {
     fetchTokens()
-  }, [])
+  }, [fetchTokens])
 
   const [search, setSearch] = useState('')
 
@@ -53,7 +52,7 @@ const Instant: React.FC<InstantProps> = ({ isAsideOpen }) => {
     if (search.length > 1) {
       debouncedSearch(search)
     }
-  }, [search])
+  }, [search, debouncedSearch])
 
   const handleOpen = () => setIsModalOpen(true)
   const handleClose = () => {
@@ -147,7 +146,7 @@ const Instant: React.FC<InstantProps> = ({ isAsideOpen }) => {
         })
     }, 300)
     return () => clearTimeout(t)
-  }, [sellingValue, selectedBuyingToken.address, selectedSellingToken.address])
+  }, [sellingValue, selectedBuyingToken.address, selectedBuyingToken.decimals, selectedSellingToken.address, selectedSellingToken.decimals])
 
   return (
     <>
@@ -389,7 +388,7 @@ const Instant: React.FC<InstantProps> = ({ isAsideOpen }) => {
             Connect
           </div>
         )}
-        {isConnected && !sellingValue || sellingValue === '0.00' ? (
+        {((isConnected && (!sellingValue || sellingValue === '0.00'))) ? (
           <div
             className="instant-connect disabled"
             // onClick={() => connectToWallet(setWalletAddress)}

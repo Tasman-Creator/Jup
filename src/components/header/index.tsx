@@ -50,7 +50,7 @@ const Header: React.FC<HeaderProps> = ({ isAsideOpen }) => {
     if (search.length > 1) {
       debouncedSearch(search)
     }
-  }, [search])
+  }, [search, debouncedSearch])
 
   const handleOpenSearchModal = () => setIsSearchModalOpen(true)
   const handleCloseSearchModal = () => {

@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, Modal } from '@mui/material'
+import { Dialog, DialogContent } from '@mui/material'
 import { ReactNode } from 'react'
 
 export const CustomModal = ({

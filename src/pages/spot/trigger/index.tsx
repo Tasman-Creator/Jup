@@ -39,7 +39,7 @@ const Trigger: React.FC<InstantProps> = ({ isAsideOpen }) => {
 
   useEffect(() => {
     fetchTokens()
-  }, [])
+  }, [fetchTokens])
 
   const handleOpen = () => setIsModalOpen(true)
   const handleClose = () => setIsModalOpen(false)
@@ -143,7 +143,7 @@ const Trigger: React.FC<InstantProps> = ({ isAsideOpen }) => {
         })
     }, 300)
     return () => clearTimeout(t)
-  }, [sellingValue, selectedBuyingToken.address, selectedSellingToken.address])
+  }, [sellingValue, selectedBuyingToken.address, selectedBuyingToken.decimals, selectedSellingToken.address, selectedSellingToken.decimals])
 
   return (
     <>
@@ -434,7 +434,7 @@ const Trigger: React.FC<InstantProps> = ({ isAsideOpen }) => {
             Connect
           </div>
         )}
-        {isConnected && !sellingValue || sellingValue === '0.00' ? (
+        {((isConnected && (!sellingValue || sellingValue === '0.00'))) ? (
           <div
             className="instant-connect disabled"
             // onClick={() => connectToWallet(setWalletAddress)}
