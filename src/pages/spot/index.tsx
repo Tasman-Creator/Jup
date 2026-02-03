@@ -23,6 +23,25 @@ type Bar = {
   t: number;
 };
 
+/** API returns { time (ms), open, high, low, close, volume } */
+type OracleBar = {
+  time: number;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume: number;
+};
+
+const oracleBarToBar = (b: OracleBar): Bar => ({
+  t: Math.floor(b.time / 1000),
+  o: b.open,
+  h: b.high,
+  l: b.low,
+  c: b.close,
+  v: b.volume,
+});
+
 type Props = {
   bars: Bar[];
 };
@@ -50,94 +69,34 @@ const Spot: React.FC = () => {
     setSelectedSellingToken,
   } = useTokenStore()
 
-  const startAnimation = async () => {
-    if (isRunningRef.current) return; // Якщо вже працює, не запускаємо ще раз
-    isRunningRef.current = true;
-
-    while (isRunningRef.current) {
-      await controls.start({
-        x: [0 + "%", "-190%"],
-        transition: {
-          duration: 25, // Скільки часу лишилося
-          ease: "linear",
-        },
-      });
-
-      // Чистимо попередній таймер перед створенням нового
-      if (pauseTimeoutRef.current) clearTimeout(pauseTimeoutRef.current);
-
-      await new Promise((resolve) => {
-        pauseTimeoutRef.current = setTimeout(resolve, 3000);
-      });
-    }
-  };
-
-  const resumeAnimation = async () => {
-    setIsCarouselPaused(false);
-    isRunningRef.current = true; // Вмикаємо флаг
-    // Чистимо попередній таймер перед створенням нового
-    if (pauseTimeoutRef.current) clearTimeout(pauseTimeoutRef.current);
-
-    const remainingTime = 25 * (1 - (Math.abs(currentX) / 190));
-
-    await controls.start({
-      x: [currentX + "%", "-190%"],
-      transition: {
-        duration: remainingTime,
-        ease: "linear",
-      },
-    });
-
-    await new Promise((resolve) => {
-      pauseTimeoutRef.current = setTimeout(resolve, 3000);
-    });
-
-    console.log("asdasda", remainingTime, currentX + "%");
-
-    isRunningRef.current = false;
-    startAnimation();
-  };
-
-  const [carouselData, setCarouselData] = useState([]);
-
   useEffect(() => {
-    console.log("datapi");
-    axios.get('https://datapi.jup.ag/v1/pools/toptrending/24h')
-      .then(response => {
-        const top10 = response.data.pools.slice(0, 10);
-        setCarouselData(top10);
+    const nowMs = Date.now();
+    const fromMs = nowMs - 86400 * 1000; // 24h ago in ms
+    const tillMs = nowMs;
+    const feedSelling = `${selectedSellingToken.symbol}USD`;
+    const feedBuying = `${selectedBuyingToken.symbol}USD`;
+
+    axios
+      .get(
+        `https://history.oraclesecurity.org/trading-view/data?feed=${encodeURIComponent(feedSelling)}&type=15&from=${fromMs}&till=${tillMs}`
+      )
+      .then((response) => {
+        const raw: OracleBar[] = Array.isArray(response.data.result) ? response.data.result : [];
+        console.log("sellingBars");
+        console.log(response);
+        setSellingBars(raw.map(oracleBarToBar));
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
 
-    startAnimation();
-    return () => {
-      isRunningRef.current = false;
-      if (pauseTimeoutRef.current) clearTimeout(pauseTimeoutRef.current);
-    };
-  }, []);
-
-  useEffect(() => {
-    const now = Math.floor(Date.now() / 1000); // поточний час у секундах
-    const fifteenMinutesAgo = now - 86400;
-    
-    axios.get(`https://fe-api.jup.ag/api/v1/charts/${selectedSellingToken.address}?type=15m&time_from=${fifteenMinutesAgo}&time_to=${now}`)
-      .then(response => {
-        const currentBars: Bar[] = response.data.bars;
-        console.log("chart");
-        console.log(response.data.bars);
-        setSellingBars(currentBars);
+    axios
+      .get(
+        `https://history.oraclesecurity.org/trading-view/data?feed=${encodeURIComponent(feedBuying)}&type=15&from=${fromMs}&till=${tillMs}`
+      )
+      .then((response) => {
+        const raw: OracleBar[] = Array.isArray(response.data.result) ? response.data.result : [];
+        setBuyingBars(raw.map(oracleBarToBar));
       })
-      .catch(err => console.log(err));
-
-    axios.get(`https://fe-api.jup.ag/api/v1/charts/${selectedBuyingToken.address}?type=15m&time_from=${fifteenMinutesAgo}&time_to=${now}`)
-      .then(response => {
-        const currentBars: Bar[] = response.data.bars;
-        console.log("chart");
-        console.log(response.data.bars);
-        setBuyingBars(currentBars);
-      })
-      .catch(err => console.log(err));
-
+      .catch((err) => console.log(err));
   }, [selectedBuyingToken.address, selectedSellingToken.address]);
 
   const stopAnimation = () => {
@@ -159,65 +118,6 @@ const Spot: React.FC = () => {
       {isAsideOpen && (
         <Aside isAsideOpen={setIsAsideOpen}/>
       )}
-
-      <div className="spot-carousel">
-        <div className="carousel-text-container">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="14"
-            height="14"
-            viewBox="0 0 16 16"
-          >
-            <path
-              fill-rule="evenodd"
-              clip-rule="evenodd"
-              d="M9.91639 2.04229C9.86569 1.94071 9.79394 1.8511 9.70593 1.77939C9.61792 1.70769 9.51565 1.65553 9.40593 1.6264C9.29621 1.59727 9.18154 1.59182 9.06955 1.61042C8.95756 1.62902 8.85081 1.67125 8.75639 1.73429C8.48039 1.91829 8.2652 2.18069 8.0988 2.43829C7.9276 2.70229 7.7764 3.00869 7.6428 3.33109C7.3756 3.97429 7.1516 4.74549 6.9708 5.51829C6.75214 6.46268 6.5884 7.41895 6.4804 8.38229C6.1549 8.17245 5.89337 7.87715 5.7244 7.52869C5.462 6.98469 5.40599 6.30149 5.40599 5.40549C5.40596 5.24729 5.35902 5.09265 5.27112 4.96112C5.18321 4.82959 5.05828 4.72708 4.91212 4.66654C4.76596 4.60601 4.60513 4.59017 4.44997 4.62102C4.29481 4.65187 4.15228 4.72804 4.04039 4.83989C3.51973 5.35944 3.10682 5.97672 2.82538 6.65629C2.54394 7.33587 2.39951 8.06434 2.40039 8.79989C2.40046 9.72078 2.62763 10.6275 3.06179 11.4396C3.49594 12.2517 4.12368 12.9442 4.88939 13.4558C5.65511 13.9674 6.53518 14.2823 7.45164 14.3725C8.36811 14.4628 9.29268 14.3256 10.1435 13.9732C10.9943 13.6208 11.745 13.064 12.3292 12.3521C12.9134 11.6402 13.3131 10.7953 13.4928 9.8921C13.6724 8.9889 13.6266 8.05533 13.3593 7.17408C13.092 6.29283 12.6115 5.49109 11.9604 4.83989C11.4868 4.36709 11.1764 4.05189 10.882 3.66629C10.5916 3.28549 10.3028 2.81589 9.91639 2.04229ZM9.69639 12.0959C9.36076 12.4311 8.93331 12.6593 8.46803 12.7518C8.00275 12.8442 7.52052 12.7967 7.08224 12.6152C6.64396 12.4337 6.26928 12.1264 6.00554 11.7321C5.7418 11.3379 5.60081 10.8743 5.60039 10.3999C5.60039 10.3999 6.30359 10.7999 7.60039 10.7999C7.60039 9.99989 8.00039 7.59989 8.60039 7.19989C9.00039 7.99989 9.22919 8.23429 9.69719 8.70309C9.92043 8.92563 10.0975 9.1901 10.2181 9.4813C10.3388 9.7725 10.4008 10.0847 10.4004 10.3999C10.4008 10.7151 10.3388 11.0273 10.2181 11.3185C10.0975 11.6097 9.92043 11.8741 9.69719 12.0967L9.69639 12.0959Z"
-              fill="#c7f284"
-            ></path>
-          </svg>
-          Trending
-          <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 256 256"
-               className="mt-px h-2.5 w-2.5 self-start">
-            <path fill="#c7f284"
-                  d="M204 64v104a12 12 0 0 1-24 0V93L72.49 200.49a12 12 0 0 1-17-17L163 76H88a12 12 0 0 1 0-24h104a12 12 0 0 1 12 12"></path>
-          </svg>
-        </div>
-        <div
-          className="carousel-container"
-          onMouseEnter={stopAnimation}
-          onMouseLeave={resumeAnimation}
-        >
-          <motion.div
-            className="carousel-track" animate={controls}
-            initial={{x: '0%'}}
-            onUpdate={(latest) => {
-              setCurrentX(parseFloat(latest.x.toString()));
-            }}
-          >
-            {carouselData.concat(carouselData).map((item, index) => {
-              const displayIndex = index % 10;
-
-              return (
-                <div key={index} className="carousel-item" onClick={() => {
-                  /*@ts-ignore*/
-                  window.location.href = `https://jup.ag/tokens/${item.baseAsset.id}`;
-                }}>
-                  <div className="item-number">
-                    {/*@ts-ignore*/}
-                    #{displayIndex + 1}
-                  </div>
-                  {/*@ts-ignore*/}
-                  <img src={item.baseAsset.icon} alt={item.baseAsset.symbol} className='item-icon'/>
-                  <div className="item-name">
-                    {/*@ts-ignore*/}
-                    {item.baseAsset.symbol}
-                  </div>
-                </div>
-              )
-            })}
-          </motion.div>
-        </div>
-      </div>
 
       <div className="spot-container">
         <div className="spot-header">

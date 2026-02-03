@@ -41,10 +41,12 @@ const Flow: React.FC<FlowProps> = ({sendingCurrencyValue, sendingCurrencyPrice, 
   useEffect(() => {
     axios
       .get(
-        `https://api.jup.ag/price/v2?ids=So11111111111111111111111111111111111111112&showExtraInfo=true`
+        `https://ultra-api.jup.ag/order?inputMint=EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v&outputMint=So11111111111111111111111111111111111111112&amount=1000000&swapMode=ExactIn`
       )
       .then((response) => {
-        setSolanaPrice(+response.data.data['So11111111111111111111111111111111111111112']?.price);
+        const { outAmount, outUsdValue } = response.data;
+        const solAmount = Number(outAmount) / LAMPORTS_PER_SOL;
+        setSolanaPrice(solAmount > 0 ? outUsdValue / solAmount : 0);
       })
       .catch((err) => console.log(err))
   }, [])

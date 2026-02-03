@@ -17,6 +17,8 @@ const Trigger: React.FC<InstantProps> = ({ isAsideOpen }) => {
   const [buyingValue, setBuyingValue] = useState<string>('')
   const [sellingPrice, setSellingPrice] = useState<number | null>(null)
   const [buyingPrice, setBuyingPrice] = useState<string | null>(null)
+  const [quoteSellingUsd, setQuoteSellingUsd] = useState<number | null>(null)
+  const [quoteBuyingUsd, setQuoteBuyingUsd] = useState<number | null>(null)
   const [sellingRate, setSellingRate] = useState<string>('0')
   const [isSellingFucused, setIsSellingFucused] = useState<boolean>(false)
   const [isOn, setIsOn] = useState(false)
@@ -62,9 +64,7 @@ const Trigger: React.FC<InstantProps> = ({ isAsideOpen }) => {
     }
 
     setSellingValue(newValue);
-    if (sellingPrice && buyingPrice) {
-      setBuyingValue(((+newValue * sellingPrice) / +buyingPrice).toFixed(2));
-    }
+    // buyingValue set from quote in useEffect
   }
 
   const handleByuingChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -103,22 +103,47 @@ const Trigger: React.FC<InstantProps> = ({ isAsideOpen }) => {
     }
   }, [sellingPrice, buyingPrice, sellingValue])
 
+  // Quote for current selling amount: inUsdValue/outUsdValue → secondary-money, outAmount → buyingValue
   useEffect(() => {
-    axios.get(`https://api.jup.ag/price/v2?ids=${selectedSellingToken.address},${selectedBuyingToken.address}&showExtraInfo=true`)
-      .then(response => {
-        const currentPrices = [
-          response.data.data[selectedSellingToken.address]?.price,
-          response.data.data[selectedBuyingToken.address]?.price
-        ];
-        setSellingPrice(currentPrices[0]);
-        setBuyingPrice(currentPrices[1]);
-        console.log("Price");
-        console.log(response.data.data);
-        console.log(currentPrices);
-      })
-      .catch(err => console.log(err));
-
-  }, [selectedBuyingToken.address, selectedSellingToken.address]);
+    const sellingDecimals = selectedSellingToken.decimals ?? 6
+    const buyingDecimals = selectedBuyingToken.decimals ?? 6
+    const num = parseFloat(sellingValue)
+    if (!sellingValue || Number.isNaN(num) || num <= 0) {
+      setQuoteSellingUsd(null)
+      setQuoteBuyingUsd(null)
+      return
+    }
+    const amountRaw = Math.floor(num * Math.pow(10, sellingDecimals))
+    if (amountRaw <= 0) return
+    const inputMint = selectedSellingToken.address
+    const outputMint = selectedBuyingToken.address
+    const t = setTimeout(() => {
+      axios
+        .get(
+          `https://ultra-api.jup.ag/order?inputMint=${inputMint}&outputMint=${outputMint}&amount=${amountRaw}&swapMode=ExactIn`
+        )
+        .then((res) => {
+          const d = res.data
+          const inAmount = Number(d.inAmount ?? d.routePlan?.[0]?.swapInfo?.inAmount ?? 0)
+          const outAmount = Number(d.outAmount ?? d.routePlan?.[0]?.swapInfo?.outAmount ?? 0)
+          const inUsdValue = d.inUsdValue ?? d.routePlan?.[0]?.usdValue
+          const outUsdValue = d.outUsdValue ?? d.routePlan?.[0]?.usdValue
+          const inHuman = inAmount / Math.pow(10, sellingDecimals)
+          const outHuman = outAmount / Math.pow(10, buyingDecimals)
+          setQuoteSellingUsd(inUsdValue != null ? inUsdValue : null)
+          setQuoteBuyingUsd(outUsdValue != null ? outUsdValue : null)
+          setBuyingValue(outHuman > 0 ? String(outHuman) : '')
+          if (inHuman > 0 && inUsdValue != null) setSellingPrice(inUsdValue / inHuman)
+          if (outHuman > 0 && outUsdValue != null) setBuyingPrice(String(outUsdValue / outHuman))
+        })
+        .catch((err) => {
+          console.log(err)
+          setQuoteSellingUsd(null)
+          setQuoteBuyingUsd(null)
+        })
+    }, 300)
+    return () => clearTimeout(t)
+  }, [sellingValue, selectedBuyingToken.address, selectedSellingToken.address])
 
   return (
     <>
@@ -286,11 +311,8 @@ const Trigger: React.FC<InstantProps> = ({ isAsideOpen }) => {
                 onFocus={() => setIsSellingFucused(true)}
                 onBlur={() => setIsSellingFucused(false)}
               />
-              <div className="secondary-money">${sellingPrice ? (
-                `${(+sellingValue) * (+sellingPrice)}`
-              ) : (
-                '0.00'
-              )}
+              <div className="secondary-money">
+                ${quoteSellingUsd != null ? Number(quoteSellingUsd).toFixed(2) : (sellingPrice && sellingValue ? (+sellingValue * sellingPrice).toFixed(2) : '0.00')}
               </div>
             </div>
           </div>
@@ -345,11 +367,9 @@ const Trigger: React.FC<InstantProps> = ({ isAsideOpen }) => {
                 onChange={handleByuingChange}
                 className={`money-main ${!buyingValue ? 'disabled' : ''}`}
               />
-              <div className="secondary-money">${buyingPrice ? (
-                `${(+buyingValue) * (+buyingPrice)}`
-              ) : (
-                '0.00'
-              )}</div>
+              <div className="secondary-money">
+                ${quoteBuyingUsd != null ? Number(quoteBuyingUsd).toFixed(2) : (buyingPrice && buyingValue ? (+buyingValue * +buyingPrice).toFixed(2) : '0.00')}
+              </div>
             </div>
           </div>
         </div>
@@ -511,11 +531,11 @@ const Trigger: React.FC<InstantProps> = ({ isAsideOpen }) => {
                 }}
                 img={token.icon}
                 name={token.symbol}
-                approved={token.tags.includes('verified')}
+                approved={token.isVerified ?? token.tags?.includes?.('verified') ?? false}
                 active={true}
-                count={+token.organicScore.toFixed(0)}
+                count={Math.round(token.organicScore ?? 0)}
                 fullName={token.name}
-                nameID={token.address}
+                nameID={token.address ?? token.id ?? ''}
                 // capital={1000}
               />
             )

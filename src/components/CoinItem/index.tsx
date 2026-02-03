@@ -2,13 +2,17 @@ import { FC } from 'react'
 import { Approved, List } from '../icons'
 import './style.scss'
 
-interface Coin {
+/** Props aligned with new token API: id, name, symbol, icon, organicScore, isVerified/tags, etc. */
+export interface CoinItemProps {
   img: string
   name: string
+  /** Verified badge: from isVerified or tags.includes('verified') */
   approved: boolean
   active: boolean
+  /** e.g. organicScore rounded */
   count: number
   fullName: string
+  /** Mint address or id */
   nameID: string
   LST?: string
   desc?: string
@@ -20,7 +24,7 @@ const shorter = (str: string) => {
   return `${str.slice(0, 4)}...${str.slice(-4)}`
 }
 
-export const CoinsItem: FC<Coin> = ({
+export const CoinsItem: FC<CoinItemProps> = ({
   img,
   name,
   approved,
@@ -38,16 +42,18 @@ export const CoinsItem: FC<Coin> = ({
       <div className="coin__data">
         <div className="coin__header">
           <div className="coin__name">{name}</div>
-          <div className="coin__approved">
-            <Approved color={'white'} />
-          </div>
+          {approved && (
+            <div className="coin__approved">
+              <Approved color={'white'} />
+            </div>
+          )}
           <div className="coin__list">
             <List color={'white'} />
             {count}
           </div>
         </div>
         <div className="coin__full-name">{fullName}</div>
-        <div className="coin__name-id">{shorter(nameID)}</div>
+        <div className="coin__name-id">{nameID ? shorter(nameID) : ''}</div>
       </div>
 
       {LST && <div className="coin__lts">{LST}</div>}

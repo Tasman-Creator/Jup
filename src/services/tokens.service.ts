@@ -1,11 +1,11 @@
 import axios from 'axios'
 
 export const getAllTokens = () =>
-  axios.get('https://fe-api.jup.ag/api/v1/tokens/search?query=')
+  axios.get('https://datapi.jup.ag/v1/assets/search?query=')
 
 export const searchTokens = (query: string) =>
   axios.get(
-    `https://fe-api.jup.ag/api/v1/tokens/search?query=${encodeURIComponent(
+    `https://datapi.jup.ag/v1/assets/search?query=${encodeURIComponent(
       query
     )}`
   )
