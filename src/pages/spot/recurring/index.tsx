@@ -3,9 +3,7 @@ import './style.scss'
 import { CustomModal } from '../../../components/CustomModal'
 import axios from 'axios'
 import { CoinsItem } from '../../../components/CoinItem'
-import CoinSearchItem from '../../../components/CoinSearchItem'
 import { Token, useTokenStore } from '../../../store/useTokenStore'
-import {info} from "sass";
 import Flow from "../flow";
 import { useAppKitAccount } from "@reown/appkit/react";
 import { modal } from '@reown/appkit/react';
@@ -47,7 +45,7 @@ const Reccuring: React.FC<InstantProps> = ({ isAsideOpen }) => {
 
   useEffect(() => {
     fetchTokens()
-  }, [])
+  }, [fetchTokens])
 
   const handleOpen = () => setIsModalOpen(true)
   const handleClose = () => setIsModalOpen(false)
@@ -167,7 +165,7 @@ const Reccuring: React.FC<InstantProps> = ({ isAsideOpen }) => {
         })
     }, 300)
     return () => clearTimeout(t)
-  }, [sellingValue, selectedBuyingToken.address, selectedSellingToken.address])
+  }, [sellingValue, selectedBuyingToken.address, selectedBuyingToken.decimals, selectedSellingToken.address, selectedSellingToken.decimals])
 
   return (
     <>
@@ -493,7 +491,7 @@ const Reccuring: React.FC<InstantProps> = ({ isAsideOpen }) => {
             Connect
           </div>
         )}
-        {isConnected && !sellingValue || sellingValue === '0.00' ? (
+        {(isConnected && (!sellingValue || sellingValue === '0.00')) ? (
           <div
             className="instant-connect disabled"
             // onClick={() => connectToWallet(setWalletAddress)}
